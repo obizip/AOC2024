@@ -1,16 +1,16 @@
+use anyhow::{Context, Result};
 use std::fs::File;
-use std::io;
 use std::path::Path;
 
 mod day1;
 
-type Answer = fn(File) -> io::Result<()>;
+type Answer = fn(File) -> Result<()>;
 
-fn main() -> io::Result<()> {
-    let inputs_path = Path::new("./inputs");
-    let open_file = |filename: &str| -> io::Result<File> {
+fn main() -> Result<()> {
+    let open_inputfile = |filename: &str| -> Result<File> {
+        let inputs_path = Path::new("./inputs");
         let filepath = inputs_path.join(filename);
-        File::open(filepath)
+        File::open(filepath).with_context(|| "failed to open inputfile {filepath}")
     };
 
     let answers: Vec<(Answer, &str)> = vec![
@@ -20,7 +20,7 @@ fn main() -> io::Result<()> {
     ];
 
     let (answer, filename) = answers[answers.len() - 1];
-    let inputfile = open_file(filename)?;
+    let inputfile = open_inputfile(filename)?;
     answer(inputfile)?;
 
     Ok(())
